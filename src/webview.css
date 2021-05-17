@@ -1,0 +1,32 @@
+/*---------------------------------------
+Embedded tags plugin CSS
+---------------------------------------*/
+
+/*** YELLOW ***/
+  
+.yellow {background: #f5ffa2;}
+.yellow-grad {background-image: linear-gradient(to right, #f5ffa2 0%, #FAFFD1  51%, #FFFFFF  100%)}
+
+/*** GREEN ***/
+  
+.green {background: #aaffa2;}
+.green-grad {background-image: linear-gradient(to right, #aaffa2 0%, #D5FFD1  51%, #FFFFFF  100%)}
+
+/*** BLUE ***/
+  
+.blue {background: #9fd1ff;}
+.blue-grad {background-image: linear-gradient(to right, #9fd1ff 0%, #CFE8FF  51%, #FFFFFF  100%)}
+  
+/*** RED ***/
+  
+.red {background: #ff8b8b;}
+.red-grad {background-image: linear-gradient(to right, #ff8b8b 0%, #FFC5C5  51%, #FFFFFF  100%)}
+  
+.btn {
+  border-color: #999999;
+  font-size: 12px;
+  font-family: Roboto;
+  padding: 2px 6px;
+  justify-content: center;
+  border-radius: 100px;
+}
