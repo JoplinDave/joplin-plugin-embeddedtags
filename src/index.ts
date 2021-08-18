@@ -5,7 +5,7 @@ joplin.plugins.register({
 	onStart: async function () {
 
 		const panels = joplin.views.panels;
-        const view = await (panels as any).create();
+    const view = await (panels as any).create("embedded-tags");
 		await panels.setHtml(view, 'Loading...');
 
 		await panels.addScript(view, './webview.js');
@@ -21,23 +21,24 @@ joplin.plugins.register({
 			iconName: 'fas fa-tags',
 		});
 		
-		await joplin.settings.registerSetting('embeddedTagSettingAllTags', {
-			value: true,
-			type: 3,
-			section: 'emdeddedTagsSection',
-			public: true,
-			label: 'Use global tags instead of note tags.',
-			description: 'This will list ALL Joplin tags, regardless of whether they are attached to the current, or any other note.',
+		await joplin.settings.registerSettings({
+			'embeddedTagSettingAllTags': {
+				value: true,
+				type: 3,
+				section: 'emdeddedTagsSection',
+				public: true,
+				label: 'Use global tags instead of note tags.',
+				description: 'This will list ALL Joplin tags, regardless of whether they are attached to the current, or any other note.',
+			},
+			'embeddedTagSettingCreateNewTag': {
+				value: true,
+				type: 3,
+				section: 'emdeddedTagsSection',
+				public: true,
+				label: 'Allow new tags to be created.',
+				description: 'This will allow the creation an embedded tag. By default, this will not create a note tag.',
+			}
 		});
-
-		await joplin.settings.registerSetting('embeddedTagSettingCreateNewTag', {
-			value: true,
-			type: 3,
-			section: 'emdeddedTagsSection',
-			public: true,
-			label: 'Allow new tags to be created.',
-			description: 'This will allow the creation an embedded tag. By default, this will not create a note tag.',
-		});		
 		
 		await joplin.commands.register({
 			name: 'selectEmbeddedTag',
