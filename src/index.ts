@@ -143,7 +143,10 @@ joplin.plugins.register({
 							}
 						}
 
-						let replacementText = '<span class="'+colourToApply+'" data-tag="'+tagName+'" data-colour="'+colour+'">'+selectedText+'</span>';
+						const embeddedTags = await getEmbeddedTagList();
+
+						const anchorText = `${tagName}-${embeddedTags.length}`;
+						let replacementText = `<span id="${anchorText}" class="${colourToApply}" data-tag="${tagName}" data-colour="${colour}">${selectedText}</span>`;
 						await joplin.commands.execute('replaceSelection', replacementText);
 
 						if(attach) // If attach to note is true
@@ -346,7 +349,8 @@ joplin.plugins.register({
 						name: 'replaceRange',
 						args: ['xxxxxxxxxx', {line: line, ch: ch1}, {line: line, ch: ch2}, origin],
 					});
-
+				} else if(action === "scrollTo") {
+					joplin.commands.execute('scrollToHash', message.hash);
 				} else {
 					
 					joplin.commands.execute('editor.execCommand', {
@@ -615,6 +619,7 @@ Embedded tags plugin CSS - END
 
 				if(headers.length >0)
 				{
+					let headerNumber = 0
 					for (const header of headers)
 					{
 						// establish if colour has been used to show show/hide colour buttons
@@ -640,20 +645,25 @@ Embedded tags plugin CSS - END
 						itemHtml.push(`
 							<p style="padding-left:8px">
 
-								<button class="embedded_tag btn `+header.colour+`" style="" href="#" data-line="`+header.lineNo+`" data-ch="${header.position}" data-colour="${header.colour}" data-action="addClass" title="Highlight with solid colour - [Line: ${header.lineNo}]">
+								<button class="embedded_tag btn `+header.colour+`" style="" href="#" data-hash=${header.tag}-${headerNumber} data-line="`+header.lineNo+`" data-ch="${header.position}" data-colour="${header.colour}" data-action="addClass" title="Highlight with solid colour - [Line: ${header.lineNo}]">
 								${header.tag}
 								</button>
 
-								<button class="embedded_tag btn ${header.colour}`+'-grad'+`" href="#" data-line="${header.lineNo}" data-ch="`+header.position+`"  data-colour="`+header.colour+`" data-action="" title="Highlight with colour fade - [Line: ${header.lineNo}]">
+								<button class="embedded_tag btn `+header.colour+`" style="" href="#" data-hash=${header.tag}-${headerNumber} data-line="`+header.lineNo+`" data-ch="${header.position}" data-colour="${header.colour}" data-action="scrollTo" title="Scroll to - [Line: ${header.lineNo}]">
+								Scroll
+								</button>
+
+								<button class="embedded_tag btn ${header.colour}`+'-grad'+`" href="#" data-hash=${header.tag}-${headerNumber} data-line="${header.lineNo}" data-ch="`+header.position+`"  data-colour="`+header.colour+`" data-action="" title="Highlight with colour fade - [Line: ${header.lineNo}]">
 									Fade
 								</button>
 								
-								<button class="embedded_tag btn" href="#" data-line="${header.lineNo}" data-ch="${header.position}" data-colour="${header.colour}" data-action="removeClass" title="Hide colour">
+								<button class="embedded_tag btn" href="#" data-hash=${header.tag}-${headerNumber} data-line="${header.lineNo}" data-ch="${header.position}" data-colour="${header.colour}" data-action="removeClass" title="Hide colour">
 									Hide
 								</button>	
 
 							</p>
 						`);
+						headerNumber += 1;
 					}
 
 					await panels.setHtml(view, `

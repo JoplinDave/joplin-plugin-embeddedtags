@@ -7,6 +7,7 @@ document.addEventListener('click', event => {
             name: 'tagSelected',
             line: element.dataset.line,
             ch: element.dataset.ch,
+            hash: element.dataset.hash,
             action: element.dataset.action,
             colour: element.dataset.colour,
             apply: element.dataset.apply,
