@@ -1,7 +1,7 @@
 {
 	"manifest_version": 1,
 	"id": "joplin.plugin.embeddedtags",
-	"app_min_version": "1.8.1",
+	"app_min_version": "2.2.2",
 	"version": "1.0.0",
 	"name": "embedded tags",
 	"description": "embeded tags",
