@@ -1,8 +1,8 @@
 # Joplin Embedded Tags Plugin
 
-A plugin for [Joplin](https://joplinapp.org/) that allows 'Embedded Tags' to be inserted in your notes. Embedded tags are separate from the tags that are directly linked to the note that you are curently editing/viewing (note tags), or other tags that may or may be linked to ther notes (global tags). You may however choose to replicate note tags, or global tags.
+A plugin for [Joplin](https://joplinapp.org/) that allows 'Embedded' or local tags to be inserted in your notes in specific locations. Embedded tags can be separate from the system tags that are linked to notes, although you may choose to replicate or add to the system tags.
 
-Sometimes tags are put on a note because of one particular word, sentence or paragraph in the note. Returning to the note, it's not always obvious what section of the note relates to the tag. With embedded tags, you can replicate your note tags by adding an embedded tag to the applicable section that caused you to tag the note in the first place.
+Sometimes tags are put on a note because of one particular word, sentence or paragraph in the note. Returning to the note, it's not always obvious what section of the note caused you to put the tag on to start with.
 
 You may also use embedded tags to find and highlight specific sections of a note for faster viewing or retrieval. If for example, you store scientific papers in Joplin and you wished to find and highlight a particular citation, then you can apply an embedded tag to this section of your note.
 
@@ -21,9 +21,9 @@ To insert an embedded tag, open the Code Mirror (MD) editor and highlight the te
 You can (dependant upon your settings) -
 
 - Select an existing tag already attached to your note (most common use)
-- Select a global tag that is not already attached to your note
+- Select a global tag that is not already attached to your note (but may be attached to other notes)
 - Create a new embedded tag
-- If you've selected a global tag, or created a new tag, you can attach the embedded tag to the note as a note tag
+- If you've selected a global tag, or created a new tag, you can attach the embedded tag to the note
 - Select a highlight colour
 - Choose to immediately apply the embedded tag to the section.
 
@@ -33,6 +33,7 @@ From here you can -
 
 - view or hide individual embedded tags
 - highlight a tag using a solid and permanent colour, or a fading highlight
+- selecting a tag will scroll the viewer to the location of the tag
 - view all embedded tags of a particular colour
 - hide all embedded tags of a particular colour
 - view all embedded tags
@@ -116,6 +117,14 @@ Embedded tags plugin CSS - END
 ---------------------------------------*/
 ```
 
-## Scroll to highlight
+## Upgrading from version 0.1.0 to 1.0.0
 
-Ideally I would have liked to have been able to scroll the viewer to the correct position before highlighting the applicable section. Unfortunately the only method available seems to be scrollToHash which is not suitable, so until we have scrollToLine or the abilty to trigger an #anchor tag from a plugin, we need to find the highlighted section manually.
+This upgrade contains a new function where the selection of a tag makes the viewer scroll to that location. Tags applied under previous versions will not scroll. You have two options - 
+- Remove existing tags and then reapply them.
+- Add the following to the SPAN id="12345678" data-hash="12345678" 
+
+If you follow the second option, make sure that you add the new attributes AFTER the initial class within the SPAN e.g.
+
+```<span class="greenxxxxx" id="12345678" data-hash="12345678" data-tag="second" data-colour="green">My tagged text</span>```
+
+The numbers "12345678" above are just an example. Each tag should have it's own random string for "id" and "data-hash" within any particular note.

@@ -5,7 +5,7 @@ joplin.plugins.register({
 	onStart: async function () {
 
 		const panels = joplin.views.panels;
-    const view = await (panels as any).create("embedded-tags");
+        const view = await (panels as any).create("embedded-tags");
 		await panels.setHtml(view, 'Loading...');
 
 		await panels.addScript(view, './webview.js');
@@ -145,8 +145,10 @@ joplin.plugins.register({
 
 						const embeddedTags = await getEmbeddedTagList();
 
-						const anchorText = `${tagName}-${embeddedTags.length}`;
-						let replacementText = `<span id="${anchorText}" class="${colourToApply}" data-tag="${tagName}" data-colour="${colour}">${selectedText}</span>`;
+						//const anchorText = `${tagName}-${embeddedTags.length}`;
+
+						const anchorText = Date.now().toString(36);
+						let replacementText = `<span class="${colourToApply}" id="${anchorText}" data-hash="${anchorText}" data-tag="${tagName}" data-colour="${colour}">${selectedText}</span>`;
 						await joplin.commands.execute('replaceSelection', replacementText);
 
 						if(attach) // If attach to note is true
@@ -181,7 +183,8 @@ joplin.plugins.register({
 					} else if(newTagToCreate) {
 
 						// Insert in note using the name given
-						let replacementText = '<span class="'+colourToApply+'" data-tag="'+newTagToCreate+'" data-colour="'+colour+'">'+selectedText+'</span>';
+						const anchorText = Date.now().toString(36);
+						let replacementText = `<span class="${colourToApply}" id="${anchorText}" data-hash="${anchorText}" data-tag="${newTagToCreate}" data-colour="${colour}">${selectedText}</span>`;
 						await joplin.commands.execute('replaceSelection', replacementText);
 
 						if(attach) // If attach to note is true
@@ -332,12 +335,10 @@ joplin.plugins.register({
 						displayColourFade = "yellowfade";
 				}
 
-				// **********************************************************************************************
-				// Note this plugin really needs scollToLine functionality here which is not available to plugins
-				// **********************************************************************************************
-
 				if (action == "addClass")
 				{
+					joplin.commands.execute('scrollToHash', message.hash);
+
 					joplin.commands.execute('editor.execCommand', {
 						name: 'replaceRange',
 						args: [displayColour, {line: line, ch: ch1}, {line: line, ch: ch2}, origin],
@@ -349,9 +350,10 @@ joplin.plugins.register({
 						name: 'replaceRange',
 						args: ['xxxxxxxxxx', {line: line, ch: ch1}, {line: line, ch: ch2}, origin],
 					});
-				} else if(action === "scrollTo") {
-					joplin.commands.execute('scrollToHash', message.hash);
+
 				} else {
+
+					joplin.commands.execute('scrollToHash', message.hash);
 					
 					joplin.commands.execute('editor.execCommand', {
 						name: 'replaceRange',
@@ -439,7 +441,7 @@ joplin.plugins.register({
 					<b>Embedded Tags
 					<hr></b>
 
-					Embedded tags are separate from the tags that are directly linked to the note that you are curently editing/viewing (note tags), or other tags that may or may be linked to ther notes (global tags). You may however choose to replicate note tags, or global tags.
+					'Embedded' or local tags can be inserted in your notes in specific locations. Embedded tags can be separate from the system tags that are linked to notes, although you may choose to replicate or add to the system tags.
 
 					<br><br>
 
@@ -645,19 +647,15 @@ Embedded tags plugin CSS - END
 						itemHtml.push(`
 							<p style="padding-left:8px">
 
-								<button class="embedded_tag btn `+header.colour+`" style="" href="#" data-hash=${header.tag}-${headerNumber} data-line="`+header.lineNo+`" data-ch="${header.position}" data-colour="${header.colour}" data-action="addClass" title="Highlight with solid colour - [Line: ${header.lineNo}]">
+								<button class="embedded_tag btn `+header.colour+`" style="" data-hash="${header.hash}" data-line="`+header.lineNo+`" data-ch="${header.position}" data-colour="${header.colour}" data-action="addClass" title="Highlight with solid colour - [Line: ${header.lineNo}]">
 								${header.tag}
 								</button>
 
-								<button class="embedded_tag btn `+header.colour+`" style="" href="#" data-hash=${header.tag}-${headerNumber} data-line="`+header.lineNo+`" data-ch="${header.position}" data-colour="${header.colour}" data-action="scrollTo" title="Scroll to - [Line: ${header.lineNo}]">
-								Scroll
-								</button>
-
-								<button class="embedded_tag btn ${header.colour}`+'-grad'+`" href="#" data-hash=${header.tag}-${headerNumber} data-line="${header.lineNo}" data-ch="`+header.position+`"  data-colour="`+header.colour+`" data-action="" title="Highlight with colour fade - [Line: ${header.lineNo}]">
+								<button class="embedded_tag btn ${header.colour}`+'-grad'+`" data-hash="${header.hash}" data-line="${header.lineNo}" data-ch="`+header.position+`"  data-colour="`+header.colour+`" data-action="" title="Highlight with colour fade - [Line: ${header.lineNo}]">
 									Fade
 								</button>
 								
-								<button class="embedded_tag btn" href="#" data-hash=${header.tag}-${headerNumber} data-line="${header.lineNo}" data-ch="${header.position}" data-colour="${header.colour}" data-action="removeClass" title="Hide colour">
+								<button class="embedded_tag btn" data-hash="${header.tag}-${headerNumber}" data-line="${header.lineNo}" data-ch="${header.position}" data-colour="${header.colour}" data-action="removeClass" title="Hide colour">
 									Hide
 								</button>	
 
@@ -756,13 +754,25 @@ function noteTags(noteBody:string, action:string)
 			let regxColor = /data-colour="(.*?)"/g;
 			let dataColour = regxColor.exec(match);
 
+			let regxHash = /data-hash="(.*?)"/g;
+			let dataHash = regxHash.exec(match);
+
+			// this needed for those who used v 1.0.0 as there was no data-hash attribute
+			let hash;
+			if(dataHash == null){
+				hash = "12345678";
+			} else {
+				hash = dataHash[1];
+			}
+
 			if(action == null)
 			{
 				headers.push({
 					tag: dataTag[1],
 					position: match.index,
 					lineNo: String(CurrentLineNo),
-					colour: dataColour[1]
+					colour: dataColour[1],
+					hash: hash
 				});
 
 			} else {
