@@ -117,7 +117,7 @@ Embedded tags plugin CSS - END
 ---------------------------------------*/
 ```
 
-## Upgrading from version 0.1.0 to 1.0.0
+## Upgrading from version 0.1.0 to 1.0.0 
 
 This upgrade contains a new function where the selection of a tag makes the viewer scroll to that location. Tags applied under previous versions will not scroll. You have two options - 
 - Remove existing tags and then reapply them.
